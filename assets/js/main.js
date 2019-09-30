@@ -1,24 +1,32 @@
-(function() {
-  const CEP = document.querySelector("#CEP");
-  const rua = document.querySelector("#rua");
-  const bairro = document.querySelector("#bairro");
-  const UF = document.querySelector("#UF");
+const cepInput = document.querySelector('#CEP');
+const ruaInput = document.querySelector('#rua');
+const bairroInput = document.querySelector('#bairro');
+const ufInput = document.querySelector('#UF');
+const complementoInput = document.querySelector('#complemento');
 
-  CEP.oninput = () => {
-    if (CEP.value === "" || CEP.value.length < 9) {
-      rua.value = "";
-      bairro.value = "";
-      UF.value = "";
+
+const buscaCep = (evt) => {
+    const cepUsuario = evt.target.value;
+
+    if (cepUsuario.length !=8) {
+        return;
     }
+    
+    fetch(`https://viacep.com.br/ws/${cepUsuario}/json/`) 
+    .then( (resposta) => {return resposta.json() })
+    .then( (dados) => { 
+        ruaInput.value = dados.logradouro;
+        bairroInput.value = dados.bairro;
+        ufInput.value = dados.uf;
+        complementoInput.value = dados.complemento;
+        cepInput.value = dados.cep;
+     })
+ }
+cepInput.oninput = buscaCep;
 
-    fetch(`https://viacep.com.br/ws/${CEP.value}/json/`)
-      .then(response => response.json())
-      .then(data => {
-        rua.value = data.logradouro;
-        bairro.value = data.bairro;
-        UF.value = data.uf;
-      });
+// fetch('https://viacep.com.br/ws/02235001/json/')
+// .then((resposta) => { return resposta.json() })
+// .then((dados) => { console.log(dados);
+// })
 
-    CEP.value = CEP.value.replace(/D/g, "").replace(/^(\d{5})(\d)/, "$1-$2");
-  };
-})();
+
